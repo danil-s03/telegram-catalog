@@ -10,7 +10,7 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:8000/products')
+    fetch("https://telegram-catalog-api.onrender.com/products")
       .then((response) => response.json())
       .then((data) => {
         setProducts(data);
