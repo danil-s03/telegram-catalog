@@ -6,21 +6,28 @@ function App() {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchAll, setSearchAll] = useState(false);
+  const [searchAll, setSearchAll] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [delayedMessageVisible, setDelayedMessageVisible] = useState(false);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setDelayedMessageVisible(true);
+    }, 4000); // 4 секунды задержки
+
     fetch("https://telegram-catalog-api.onrender.com/products")
       .then((response) => response.json())
       .then((data) => {
+        clearTimeout(timer);
         setProducts(data);
         const uniqueCategories = [...new Set(data.map(p => p.category))];
         setCategories(uniqueCategories);
-        setSelectedCategory(uniqueCategories[0]);
+        setSelectedCategory(uniqueCategories[0] || '');
         setLoading(false);
       })
       .catch((error) => {
         console.error('Ошибка загрузки:', error);
+        clearTimeout(timer);
         setLoading(false);
       });
   }, []);
@@ -40,25 +47,40 @@ function App() {
         padding: '20px',
         fontFamily: 'Arial',
         minHeight: '100vh',
-        backgroundImage: 'url("bg.png")', // Путь к картинке в public/bg.png
+        backgroundImage: 'url("bg.png")',
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
       }}
     >
+      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <img src="logo.png" alt="Логотип" style={{ height: '60px' }} />
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ fontSize: '18px', fontWeight: 'bold' }}>УДАРНИК. Все для дома и ремонта.</div>
+          <div style={{ fontSize: '14px' }}>г. Владивосток, ул. Полковника Фесюна, 12</div>
+        </div>
+      </div>
+
       <div style={{
         backgroundColor: 'rgba(255, 255, 255, 0.5)',
         padding: '20px',
         borderRadius: '12px'
       }}>
-        <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>📦 Каталог товаров</h1>
+        <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>📦 Наш Каталог</h1>
 
         {loading ? (
-          <p>Загрузка...</p>
+          delayedMessageVisible ? (
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontSize: '18px' }}>⏳ Сервер просыпается, подождите до 30 секунд...</p>
+              <img src="logo.png" alt="Загрузка" style={{ width: '100px', marginTop: '10px' }} />
+            </div>
+          ) : (
+            <p>Загрузка...</p>
+          )
         ) : (
           <>
-            <div style={{ marginBottom: '10px' }}>
+            <div style={{ marginBottom: '10px', textAlign: 'right' }}>
               <label>Категория: </label>
               <select
                 value={selectedCategory}
@@ -80,7 +102,7 @@ function App() {
               </label>
             </div>
 
-            <div style={{ marginBottom: '20px' }}>
+            <div style={{ marginBottom: '20px', textAlign: 'right' }}>
               <input
                 type="text"
                 placeholder="🔍 Поиск товара..."
