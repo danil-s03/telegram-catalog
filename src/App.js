@@ -82,27 +82,37 @@ function App() {
             <div style={{ marginBottom: '20px' }}>
               {categories.map((cat, index) => (
                 <details key={index} style={{ marginBottom: '10px', backgroundColor: '#fff', padding: '10px', borderRadius: '8px' }}>
-                  <summary style={{ fontWeight: 'bold' }}>{cat}</summary>
-                  {filteredProducts.filter(p => p.category === cat || searchAll).map((p, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        border: '1px solid #ccc',
-                        borderRadius: '10px',
-                        padding: '10px',
-                        marginTop: '10px',
-                        boxShadow: '2px 2px 8px rgba(0,0,0,0.05)',
-                        backgroundColor: '#f9f9f9'
-                      }}
-                    >
-                      <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{p.name}</div>
-                      <div>💰 Цена: <b>{p.price ? `${p.price} ₽` : '—'}</b></div>
-                      <div>🔖 Артикул товара: {p.article || '—'}</div>
-                      <div style={{ marginTop: '5px', color: p.stock > 0 ? 'green' : 'red' }}>
-                        📦 {p.in_stock}
+                  <summary
+                    style={{ fontWeight: 'bold', cursor: 'pointer' }}
+                    onClick={() => {
+                      setSearchAll(false);
+                      setSelectedCategory(cat);
+                    }}
+                  >
+                    {cat}
+                  </summary>
+                  {filteredProducts
+                    .filter(p => p.category === cat)
+                    .map((p, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          border: '1px solid #ccc',
+                          borderRadius: '10px',
+                          padding: '10px',
+                          marginTop: '10px',
+                          boxShadow: '2px 2px 8px rgba(0,0,0,0.05)',
+                          backgroundColor: '#f9f9f9'
+                        }}
+                      >
+                        <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{p.name}</div>
+                        <div>💰 Цена: <b>{p.price ? `${p.price} ₽` : '—'}</b></div>
+                        <div>🔖 Артикул товара: {p.article || '—'}</div>
+                        <div style={{ marginTop: '5px', color: p.stock > 0 ? 'green' : 'red' }}>
+                          📦 {p.in_stock}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </details>
               ))}
             </div>
