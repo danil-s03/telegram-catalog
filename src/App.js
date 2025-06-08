@@ -13,7 +13,7 @@ function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDelayedMessageVisible(true);
-    }, 4000); // 4 секунды задержки
+    }, 4000);
 
     fetch("https://telegram-catalog-api.onrender.com/products")
       .then((response) => response.json())
@@ -22,7 +22,6 @@ function App() {
         setProducts(data);
         const uniqueCategories = [...new Set(data.map(p => p.category))];
         setCategories(uniqueCategories);
-        setSelectedCategory(uniqueCategories[0] || '');
         setLoading(false);
       })
       .catch((error) => {
@@ -55,10 +54,10 @@ function App() {
       }}
     >
       <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <img src="logo.png" alt="Логотип" style={{ height: '60px' }} />
+        <img src="Logo.png" alt="Логотип" style={{ height: '100px' }} />
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '18px', fontWeight: 'bold' }}>УДАРНИК. Все для дома и ремонта.</div>
-          <div style={{ fontSize: '14px' }}>г. Владивосток, ул. Полковника Фесюна, 12</div>
+          <div style={{ fontSize: '40px', fontWeight: 'bold' }}>УДАРНИК. Все для дома и ремонта.</div>
+          <div style={{ fontSize: '18px' }}>г. Владивосток, ул. Полковника Фесюна, 12</div>
         </div>
       </div>
 
@@ -80,68 +79,33 @@ function App() {
           )
         ) : (
           <>
-            <div style={{ marginBottom: '10px', textAlign: 'right' }}>
-              <label>Категория: </label>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                disabled={searchAll}
-              >
-                {categories.map((cat, index) => (
-                  <option key={index} value={cat}>{cat}</option>
-                ))}
-              </select>
-
-              <label style={{ marginLeft: '20px' }}>
-                <input
-                  type="checkbox"
-                  checked={searchAll}
-                  onChange={(e) => setSearchAll(e.target.checked)}
-                />
-                {' '}Искать по всем категориям
-              </label>
+            <div style={{ marginBottom: '20px' }}>
+              {categories.map((cat, index) => (
+                <details key={index} style={{ marginBottom: '10px', backgroundColor: '#fff', padding: '10px', borderRadius: '8px' }}>
+                  <summary style={{ fontWeight: 'bold' }}>{cat}</summary>
+                  {filteredProducts.filter(p => p.category === cat || searchAll).map((p, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        border: '1px solid #ccc',
+                        borderRadius: '10px',
+                        padding: '10px',
+                        marginTop: '10px',
+                        boxShadow: '2px 2px 8px rgba(0,0,0,0.05)',
+                        backgroundColor: '#f9f9f9'
+                      }}
+                    >
+                      <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{p.name}</div>
+                      <div>💰 Цена: <b>{p.price ? `${p.price} ₽` : '—'}</b></div>
+                      <div>🔖 Артикул товара: {p.article || '—'}</div>
+                      <div style={{ marginTop: '5px', color: p.stock > 0 ? 'green' : 'red' }}>
+                        📦 {p.in_stock}
+                      </div>
+                    </div>
+                  ))}
+                </details>
+              ))}
             </div>
-
-            <div style={{ marginBottom: '20px', textAlign: 'right' }}>
-              <input
-                type="text"
-                placeholder="🔍 Поиск товара..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  padding: '8px',
-                  width: '300px',
-                  borderRadius: '5px',
-                  border: '1px solid #ccc'
-                }}
-              />
-            </div>
-
-            {filteredProducts.length === 0 ? (
-              <p>Нет товаров по выбранным критериям.</p>
-            ) : (
-              filteredProducts.map((p, index) => (
-                <div
-                  key={index}
-                  style={{
-                    border: '1px solid #ccc',
-                    borderRadius: '10px',
-                    padding: '10px',
-                    marginBottom: '10px',
-                    boxShadow: '2px 2px 8px rgba(0,0,0,0.05)',
-                    backgroundColor: '#fff'
-                  }}
-                >
-                  <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{p.name}</div>
-                  <div>💰 Цена: <b>{p.price ? `${p.price} ₽` : '—'}</b></div>
-                  <div>📁 Категория: {p.category}</div>
-                  <div>🔖 Артикул товара: {p.article || '—'}</div>
-                  <div style={{ marginTop: '5px', color: p.stock > 0 ? 'green' : 'red' }}>
-                    📦 {p.in_stock}
-                  </div>
-                </div>
-              ))
-            )}
           </>
         )}
       </div>
